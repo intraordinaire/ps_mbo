@@ -310,6 +310,9 @@ class ps_mbo extends Module
      */
     public function hookActionAdminControllerSetMedia()
     {
+        if(strpos(_PS_VERSION_, '8') === 0) {
+            return;
+        }
         // has to be loaded in header to prevent flash of content
         $this->context->controller->addJs($this->getPathUri() . 'views/js/recommended-modules.js?v=' . $this->version);
 
@@ -338,6 +341,9 @@ class ps_mbo extends Module
      */
     public function hookDisplayDashboardTop()
     {
+        if(strpos(_PS_VERSION_, '8') === 0) {
+            return '';
+        }
         /** @var UrlGeneratorInterface $router */
         $router = $this->get('router');
 
