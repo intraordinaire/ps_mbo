@@ -87,13 +87,11 @@ class ps_mbo extends Module
         'AdminSearchEngines',
         'AdminReferrers',
     ];
-
     const TABS_WITH_RECOMMENDED_MODULES_AFTER_CONTENT = [
         'AdminMarketing',
         'AdminPayment',
         'AdminCarriers',
     ];
-
     const ADMIN_CONTROLLERS = [
         'AdminPsMboModule' => [
             'name' => 'Module catalog',
@@ -122,12 +120,10 @@ class ps_mbo extends Module
             'core_reference' => 'AdminThemesCatalog',
         ],
     ];
-
     const HOOKS = [
         'actionAdminControllerSetMedia',
         'displayDashboardTop',
     ];
-
     /**
      * @var ContainerInterface
      */
@@ -224,17 +220,17 @@ class ps_mbo extends Module
         $tab = new Tab();
         $tab->module = $this->name;
         $tab->class_name = $tabData['class_name'];
-        $tab->position = (int) $position;
+        $tab->position = (int)$position;
         $tab->id_parent = empty($tabData['parent_class_name']) ? -1 : Tab::getIdFromClassName($tabData['parent_class_name']);
         $tab->name = $tabNameByLangId;
 
-        if (false === (bool) $tab->add()) {
+        if (false === (bool)$tab->add()) {
             return false;
         }
 
         if (Validate::isLoadedObject($tab)) {
             // Updating the id_parent will override the position, that's why we save 2 times
-            $tab->position = (int) $position;
+            $tab->position = (int)$position;
             $tab->save();
         }
 
@@ -285,7 +281,7 @@ class ps_mbo extends Module
             return false;
         }
 
-        if (false === (bool) $tab->delete()) {
+        if (false === (bool)$tab->delete()) {
             return false;
         }
 
@@ -297,7 +293,7 @@ class ps_mbo extends Module
                 $tabCore->active = true;
             }
 
-            if (false === (bool) $tabCore->save()) {
+            if (false === (bool)$tabCore->save()) {
                 return false;
             }
         }
@@ -310,7 +306,13 @@ class ps_mbo extends Module
      */
     public function hookActionAdminControllerSetMedia()
     {
-        if(strpos(_PS_VERSION_, '8') === 0) {
+        if (strpos(_PS_VERSION_, '8') === 0) {
+            if ($this->isAdminLegacyContext()) {
+                $this->context->controller->addCSS($this->getPathUri() . 'views/css/push-new-version-legacy.css');
+            } else {
+                $this->context->controller->addCSS($this->getPathUri() . 'views/css/push-new-version.css');
+            }
+
             return;
         }
         // has to be loaded in header to prevent flash of content
@@ -341,8 +343,18 @@ class ps_mbo extends Module
      */
     public function hookDisplayDashboardTop()
     {
-        if(strpos(_PS_VERSION_, '8') === 0) {
-            return '';
+        if (strpos(_PS_VERSION_, '8') === 0) {
+            if(strpos($this->context->controller->controller_name, 'AdminModules') === 0) {
+                return '';
+            }
+            $this->smarty->assign([
+                'newVesionUrl' => 'https://prestashop.com/edition',
+            ]);
+            if ($this->isAdminLegacyContext()) {
+                return $this->fetch('module:ps_mbo/views/templates/hook/push-new-version-legacy.tpl');
+            }
+
+            return $this->fetch('module:ps_mbo/views/templates/hook/push-new-version.tpl');
         }
         /** @var UrlGeneratorInterface $router */
         $router = $this->get('router');
