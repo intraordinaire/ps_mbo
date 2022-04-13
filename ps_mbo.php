@@ -220,17 +220,17 @@ class ps_mbo extends Module
         $tab = new Tab();
         $tab->module = $this->name;
         $tab->class_name = $tabData['class_name'];
-        $tab->position = (int)$position;
+        $tab->position = (int) $position;
         $tab->id_parent = empty($tabData['parent_class_name']) ? -1 : Tab::getIdFromClassName($tabData['parent_class_name']);
         $tab->name = $tabNameByLangId;
 
-        if (false === (bool)$tab->add()) {
+        if (false === (bool) $tab->add()) {
             return false;
         }
 
         if (Validate::isLoadedObject($tab)) {
             // Updating the id_parent will override the position, that's why we save 2 times
-            $tab->position = (int)$position;
+            $tab->position = (int) $position;
             $tab->save();
         }
 
@@ -281,7 +281,7 @@ class ps_mbo extends Module
             return false;
         }
 
-        if (false === (bool)$tab->delete()) {
+        if (false === (bool) $tab->delete()) {
             return false;
         }
 
@@ -293,7 +293,7 @@ class ps_mbo extends Module
                 $tabCore->active = true;
             }
 
-            if (false === (bool)$tabCore->save()) {
+            if (false === (bool) $tabCore->save()) {
                 return false;
             }
         }
@@ -344,7 +344,7 @@ class ps_mbo extends Module
     public function hookDisplayDashboardTop()
     {
         if (strpos(_PS_VERSION_, '8') === 0) {
-            if(strpos($this->context->controller->controller_name, 'AdminModules') === 0) {
+            if (strpos($this->context->controller->controller_name, 'AdminModules') === 0) {
                 return '';
             }
             $this->smarty->assign([
